@@ -1,0 +1,8 @@
+Conception / Réalisation d’un robot de course
+Equipe de 3
+Contrainte :
+- 100% Autonome
+- évite les obstacles
+Apport perso :
+- CAO du Chassis
+- Code des différents composants

@@ -1,0 +1,15 @@
+Cage de protection pour vérin à haute vitesse
+
+Objectif : Concevoir une cage pour confiner les débris projetés lors des essais de traction/compression et protéger la caméra filmant l'essai.
+
+Contraintes :
+
+- Porte facile à ouvrir + visibilité caméra optimale (sans reflet)
+- Plateforme située à +1m de hauteur → espace d'ouverture optimisé
+- Assemblage simple, sans colle → montage en créneau (découpe laser)
+- Trappe d'évacuation des débris
+- Cage doit être transparente
+
+Apport perso : 
+- Étude comparative des systèmes de fermeture
+- conception paramétrée de la cage de protection

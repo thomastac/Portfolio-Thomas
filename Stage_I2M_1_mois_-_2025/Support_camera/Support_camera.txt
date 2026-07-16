@@ -1,0 +1,13 @@
+Support de caméra 
+
+Objectif : Concevoir un support  permettant de positionner une caméra thermique (avec éclairage).
+
+Contraintes :
+
+Réutilisation de profilé
+- Réalisation en découpe laser
+- Stabilité du support malgré le poids caméra + spots lumineux
+
+Apport perso : 
+- Conception 3D 
+- fabrication par découpe laser.

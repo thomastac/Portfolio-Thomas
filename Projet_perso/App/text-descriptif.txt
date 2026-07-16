@@ -1,0 +1,15 @@
+Développement d'une application de gestion des paiements du
+BDE (Bureau des Étudiants).
+Contraintes :
+· Suivre les contributions des membres du BDE de manière claire
+et centralisée.
+. Permettre la saisie, la visualisation et l'exportation des
+paiements effectués.
+· Identifier précisément les membres ayant payé ou non leur
+cotisation.
+Apport personnel :
+· Conception de la logique et de l'interface avec Bolt.
+· Mise en place de la base de données en temps réel avec
+Firebase.
+· Déploiement en ligne via Netlify.
+· Génération d'un fichier AAB pour la diffusion sur Android.

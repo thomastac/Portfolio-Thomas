@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page introuvable — Thomas CHONGCHAREUN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FBF8F3;
+            --bg-secondary: #FFFFFF;
+            --text-main: #3D405B;
+            --primary: #81B29A;
+            --accent: #E07A5F;
+            --highlight: #F2CC8F;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(160deg, var(--bg-main) 0%, #f3eee2 100%);
+            color: var(--text-main);
+        }
+
+        .wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Nuage perdu, réutilisant l'esprit du nuage d'intro du portfolio */
+        .lost-cloud {
+            width: 220px;
+            height: auto;
+            margin-bottom: 1rem;
+            animation: float 3.4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50%      { transform: translateY(-14px) rotate(2deg); }
+        }
+
+        .code-404 {
+            font-size: clamp(3.5rem, 10vw, 6rem);
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .code-404 span { color: var(--accent); }
+
+        h1.tagline {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 0.25rem;
+            transform: rotate(-1deg);
+        }
+
+        p.subtitle {
+            margin-top: 1rem;
+            max-width: 420px;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #6b6e85;
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--text-main);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .lost-cloud { animation: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <svg class="lost-cloud" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration d'un nuage perdu, l'air confus">
+            <ellipse cx="180" cy="164" rx="140" ry="50" fill="#FFFFFF" />
+            <ellipse cx="110" cy="130" rx="70" ry="55" fill="#FFFFFF" />
+            <ellipse cx="240" cy="125" rx="80" ry="60" fill="#FFFFFF" />
+            <ellipse cx="180" cy="100" rx="60" ry="50" fill="#FFFFFF" />
+            <!-- petits yeux confus -->
+            <circle cx="155" cy="150" r="6" fill="#3D405B" />
+            <circle cx="205" cy="150" r="6" fill="#3D405B" />
+            <!-- bouche perplexe -->
+            <path d="M160 172 Q180 162 200 172" stroke="#3D405B" stroke-width="4" fill="none" stroke-linecap="round" />
+            <!-- point d'interrogation -->
+            <text x="245" y="95" font-family="Poppins, sans-serif" font-size="40" font-weight="700" fill="#E07A5F">?</text>
+        </svg>
+
+        <div class="code-404">4<span>0</span>4</div>
+        <h1 class="tagline">Oups… cette page s'est envolée avec le nuage</h1>
+        <p class="subtitle">
+            La page que vous cherchez n'existe pas ou plus. Pas de panique — le reste du portfolio est toujours là,
+            bien ancré au sol.
+        </p>
+
+        <div class="actions">
+            <a href="Portfolio.html#accueil" class="btn btn-primary">← Retour au portfolio</a>
+            <a href="Portfolio.html#contact" class="btn btn-outline">Me contacter</a>
+        </div>
+    </div>
+</body>
+
+</html>

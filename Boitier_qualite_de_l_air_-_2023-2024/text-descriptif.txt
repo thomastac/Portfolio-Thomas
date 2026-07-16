@@ -1,0 +1,10 @@
+Conception et réalisation d’un boîtier de mesure de la qualité de l’air.
+Contraintes :
+- Mesurer les particules fines PM2.5, PM5 et PM10, ainsi que les COV (composés organiques volatils).
+- Affichage en temps réel de la qualité de l’air.
+- Le boîtier doit être compact et esthétique.
+Apport personnel :
+- Modélisation 3D (CAO) du boîtier.
+- Dimensionnement des composants.
+- Choix des capteurs.
+- Programmation des différents capteurs.

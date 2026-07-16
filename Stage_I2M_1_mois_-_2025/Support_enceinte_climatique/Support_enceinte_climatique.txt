@@ -1,0 +1,12 @@
+Support pour enceinte climatique
+
+Objectif : Concevoir un support facilitant l'installation de l'enceinte climatique sur la machine Zwick Roell (traction-compression).
+
+Contraintes :
+
+- Réglage en hauteur du support
+- fixer la position
+
+
+Apport perso : 
+- Conception 3D

@@ -1,0 +1,7 @@
+Conception / Réalisation d’un système Ambilight
+Contrainte :
+- Peut être actionner par un switch
+Apport perso :
+- CAO du support des interrupteurs
+- Configuration de l’interupteur connecté (Tasmota) & système ambilight
+code ESP32

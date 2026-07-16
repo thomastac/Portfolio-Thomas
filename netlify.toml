@@ -1,0 +1,49 @@
+[build]
+  publish = "."
+  command = "echo 'No build command needed for static HTML'"
+
+# Headers de sécurité (toutes les pages)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Cache long pour les assets lourds (immuables entre déploiements)
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*.glb"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# Type MIME explicite pour les modèles 3D (évite que le CDN renvoie un type inattendu)
+[[headers]]
+  for = "/*.glb"
+  [headers.values]
+    Content-Type = "model/gltf-binary"
+
+[[headers]]
+  for = "/*.gltf"
+  [headers.values]
+    Content-Type = "model/gltf+json"
+
+# La page d'accueil sert le portfolio
+[[redirects]]
+  from = "/"
+  to = "/Portfolio.html"
+  status = 200
+
+# Repli SPA : uniquement si AUCUN fichier statique ne correspond (force = false par défaut).
+# Les assets (.glb, .png, .jpg…) existants sont donc toujours servis directement et
+# ne sont JAMAIS réécrits vers le HTML.
+[[redirects]]
+  from = "/*"
+  to = "/Portfolio.html"
+  status = 200

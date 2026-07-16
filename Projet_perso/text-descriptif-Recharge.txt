@@ -1,0 +1,6 @@
+Conception / Réalisation d’un système de recharge
+Contrainte :
+- Doit recharger ma montre et mes écouteurs
+Apport perso :
+- CAO du support de recharge
+- Impression de ce support en PLA

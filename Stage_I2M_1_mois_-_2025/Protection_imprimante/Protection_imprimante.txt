@@ -1,0 +1,13 @@
+Caisson de protection pour imprimante 3D
+
+Objectif : Concevoir un caisson évacuant les polluants (COV, particules fines) émis par l'imprimante 3D, tout en restant accessible à l'usage quotidien.
+
+Contraintes :
+
+Double ouverture par galandage
+Grilles d'aération avec filtre à charbon actif pour la circulation d'air
+Adaptation à deux types d'imprimante (FDM, SLA)
+
+Apport perso : 
+- Réutilisation des solutions techniques du projet n°1 (portes par galandage, assemblage)
+- conception paramétrée pour réadapter le caisson à une imprimante SLA.
