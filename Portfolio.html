@@ -2667,17 +2667,51 @@
         .parcours-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
         .parcours-svg { display: block; width: 100%; min-width: 640px; height: auto; margin: 0 auto; }
 
-        /* Arc principal : trait épais vert, tracé « à la main » (tremblé organique) */
+        /* Tige : trait épais vert, tracé « à la main » (tremblé organique) */
         .pc-arc {
-            fill: none; stroke: var(--primary); stroke-width: 15;
+            fill: none; stroke: var(--primary); stroke-width: 13;
             stroke-linecap: round; stroke-linejoin: round; opacity: 0.94;
             filter: url(#pc-rough) drop-shadow(0 3px 8px rgba(129,178,154,0.26));
         }
-        /* Segment ouvert : pointillés accent, tracé main aussi */
+        /* Le futur : crosse de fougère en pointillés, tracé main aussi */
         .pc-arc-open {
-            fill: none; stroke: var(--accent); stroke-width: 6;
-            stroke-linecap: round; stroke-dasharray: 4 14;
+            fill: none; stroke: var(--accent); stroke-width: 5;
+            stroke-linecap: round; stroke-dasharray: 4 13;
             filter: url(#pc-rough);
+        }
+        /* Sol, herbe, graine */
+        .pc-soil {
+            fill: none; stroke: #B08968; stroke-width: 5;
+            stroke-linecap: round; opacity: 0.55; filter: url(#pc-rough);
+        }
+        .pc-grass {
+            fill: none; stroke: var(--primary); stroke-width: 3;
+            stroke-linecap: round; opacity: 0.7; filter: url(#pc-rough);
+        }
+        .pc-seed { fill: #9C6644; }
+        /* Feuilles des étapes : se déploient depuis la tige, se balancent au survol */
+        .pc-leaf { transform-box: fill-box; transform-origin: left center; }
+        .pc-vein { fill: none; stroke-width: 2; stroke-linecap: round; opacity: 0.6; }
+        .pc-node:hover .pc-leaf { animation: pc-sway 1.8s ease-in-out infinite; }
+        @keyframes pc-sway {
+            0%, 100% { transform: rotate(0deg); }
+            35%      { transform: rotate(5deg); }
+            70%      { transform: rotate(-3deg); }
+        }
+        /* Soulignage manuscrit du titre */
+        .pc-center-line {
+            fill: none; stroke: var(--primary); stroke-width: 4;
+            stroke-linecap: round; filter: url(#pc-rough);
+        }
+        /* Feuilles d'ambiance : dérive lente, comme portées par le vent */
+        .pc-ambient-leaf {
+            transform-box: fill-box; transform-origin: center;
+            animation: pc-drift 6.5s ease-in-out infinite alternate;
+        }
+        .pc-ambient--2 .pc-ambient-leaf { animation-duration: 8s; animation-delay: -3s; }
+        @keyframes pc-drift {
+            from { transform: translateY(0) rotate(0deg); }
+            to   { transform: translateY(-14px) rotate(10deg); }
         }
         /* Anti-sélection bleue au clic/tap sur les checkpoints */
         .parcours-svg { -webkit-tap-highlight-color: transparent; }
@@ -2717,7 +2751,7 @@
         /* Puce pulse (3ème année — aujourd'hui) */
         .pc-now-pulse {
             animation: pc-pulse 2.4s ease-out infinite;
-            transform-origin: 652px 291px;
+            transform-box: fill-box; transform-origin: 50% 50%;
         }
         @keyframes pc-pulse {
             0%   { transform: scale(1); opacity: 0.9; }
@@ -2732,7 +2766,7 @@
         .pc-chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
         .pc-chip rect {
             transition: fill 0.25s ease;
-            filter: drop-shadow(0 6px 14px rgba(224,122,95,0.25));
+            filter: url(#pc-rough) drop-shadow(0 6px 14px rgba(224,122,95,0.25));
         }
         .pc-chip-title {
             font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700;
@@ -2763,17 +2797,19 @@
         .pc-popup-overlay.open { opacity: 1; visibility: visible; }
         .pc-popup {
             --pc-pop-color: var(--primary);
-            background: var(--bg-secondary, #fff); border-radius: 22px;
+            background: var(--bg-secondary, #fff);
+            border-radius: 32px 22px 30px 20px / 26px 30px 22px 32px; /* galet organique */
             box-shadow: 0 24px 70px rgba(0,0,0,0.28);
             max-width: 460px; width: 100%;
-            padding: calc(1.7rem + 8px) 1.9rem 1.8rem;
+            padding: calc(1.7rem + 10px) 1.9rem 1.8rem;
             position: relative; overflow: hidden;
             transform-origin: center center; will-change: transform;
         }
-        /* Bandeau d'accent coloré (couleur de l'étape) */
+        /* Bandeau d'accent : couleur de l'étape, bord inférieur ondulé */
         .pc-popup::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px;
-            background: var(--pc-pop-color);
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 10px;
+            background: linear-gradient(90deg, var(--pc-pop-color), color-mix(in srgb, var(--pc-pop-color) 55%, #fff));
+            border-radius: 0 0 45% 55% / 0 0 10px 14px;
         }
         .pc-popup-close {
             position: absolute; top: 0.7rem; right: 0.7rem; z-index: 2;
@@ -2790,8 +2826,10 @@
             color: var(--pc-pop-color); margin-bottom: 0.35rem; line-height: 1;
         }
         .pc-popup-year::before {
-            content: ''; width: 12px; height: 12px; border-radius: 50%;
-            background: var(--pc-pop-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pc-pop-color) 22%, transparent);
+            content: ''; width: 15px; height: 15px;
+            border-radius: 0 100% 4px 100%; /* petite feuille */
+            transform: rotate(-12deg);
+            background: var(--pc-pop-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pc-pop-color) 18%, transparent);
         }
         .pc-popup-title {
             font-size: 1.35rem; font-weight: 700; color: var(--text-main);
@@ -2807,7 +2845,8 @@
         /* Bouton « Voir la fiche mission » */
         .pc-popup-mission {
             display: block; width: 100%; text-align: left; cursor: pointer;
-            margin-top: 1.1rem; padding: 0.85rem 1.05rem; border-radius: 14px;
+            margin-top: 1.1rem; padding: 0.85rem 1.05rem;
+            border-radius: 20px 14px 18px 12px / 16px 20px 12px 18px;
             border: 1.5px solid color-mix(in srgb, var(--pc-pop-color) 45%, transparent);
             background: color-mix(in srgb, var(--pc-pop-color) 10%, #fff);
             transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
@@ -2834,7 +2873,7 @@
         .pc-popup-stage__desc { margin-top: 0.7rem; font-size: 0.84rem; }
 
         @media (prefers-reduced-motion: reduce) {
-            .pc-now-pulse { animation: none; }
+            .pc-now-pulse, .pc-node:hover .pc-leaf, .pc-ambient-leaf { animation: none; }
         }
 
         /* 5b. Modale Alternance — fiche native */
@@ -3631,8 +3670,8 @@
                     <section id="parcours" class="reveal">
                         <div class="parcours-wrap">
                             <div class="parcours-scroll">
-                                <svg class="parcours-svg" viewBox="0 0 880 660" role="img"
-                                    aria-label="Mon parcours : BAC STI2D, Bachelor 1ère année + stage I2M, 2ème année + Pollen AM, 3ème année en cours, puis alternance septembre 2026">
+                                <svg class="parcours-svg" viewBox="0 0 880 760" role="img"
+                                    aria-label="Mon parcours, représenté comme une plante qui grandit : graine puis 2022 BAC STI2D, feuille 2024-2025 Bachelor 1ère année et stage I2M, feuille 2025-2026 2ème année et stage Pollen AM, pousse 2026 3ème année en cours, et le futur qui se déroule vers l'alternance de septembre 2026">
 
                                     <!-- Filtre « tracé à la main » : léger tremblé organique du trait -->
                                     <defs>
@@ -3642,57 +3681,98 @@
                                         </filter>
                                     </defs>
 
-                                    <!-- Arc principal (¾ de boucle) — trait épais vert, dessiné à la main -->
+                                    <!-- Sol, herbe et graine : le point de départ -->
+                                    <g class="pc-ground">
+                                        <path class="pc-soil" d="M 118 702 C 200 694, 300 708, 400 700 C 500 693, 600 706, 722 700"/>
+                                        <path class="pc-grass" d="M 168 700 C 165 688, 158 682, 156 672 M 180 701 C 182 690, 188 684, 194 678 M 246 702 C 244 692, 238 686, 234 678 M 258 702 C 261 693, 266 688, 272 683"/>
+                                        <ellipse class="pc-seed" cx="210" cy="688" rx="9" ry="12" transform="rotate(-14 210 688)"/>
+                                    </g>
+
+                                    <!-- Tige : trait principal, sinueux, dessiné au fil du scroll -->
                                     <path id="pc-arc" class="pc-arc"
-                                        d="M 235 442 A 225 225 0 1 1 652 291" pathLength="1"/>
+                                        d="M 210 690 C 240 645, 305 615, 280 560 C 258 505, 212 465, 200 400 C 188 330, 320 300, 430 260 C 545 222, 590 208, 620 160"
+                                        pathLength="1"/>
 
-                                    <!-- Chevrons le long de l'arc -->
-                                    <polygon class="pc-chev" points="-8,-7 10,0 -8,7" transform="translate(205,322) rotate(-88)"/>
-                                    <polygon class="pc-chev" points="-8,-7 10,0 -8,7" transform="translate(353,119) rotate(-20)"/>
-                                    <polygon class="pc-chev" points="-8,-7 10,0 -8,7" transform="translate(595,177) rotate(47)"/>
+                                    <!-- Petites pousses le long de la tige -->
+                                    <path class="pc-chev" d="M 0 0 C 4 -9, 15 -12, 21 -6 C 16 3, 6 4, 0 0 Z" transform="translate(256,628) rotate(-55)"/>
+                                    <path class="pc-chev" d="M 0 0 C 4 -9, 15 -12, 21 -6 C 16 3, 6 4, 0 0 Z" transform="translate(220,468) rotate(155) scale(0.9)"/>
+                                    <path class="pc-chev" d="M 0 0 C 4 -9, 15 -12, 21 -6 C 16 3, 6 4, 0 0 Z" transform="translate(330,288) rotate(-30) scale(0.95)"/>
 
-                                    <!-- Segment ouvert : pointillés vers la suite -->
-                                    <path class="pc-arc-open" d="M 657 310 A 240 240 0 0 1 575 536"/>
-                                    <polygon class="pc-arrow" points="-9,-8 12,0 -9,8" transform="translate(575,536) rotate(145)"/>
+                                    <!-- Le futur : crosse de fougère en pointillés qui se déroule -->
+                                    <path class="pc-arc-open" d="M 620 160 C 668 138, 726 138, 752 178 C 772 210, 758 248, 726 252 C 700 255, 686 232, 698 214"/>
+                                    <polygon class="pc-arrow" points="-9,-8 12,0 -9,8" transform="translate(700,268) rotate(88)"/>
 
-                                    <!-- Centre : Mon Parcours -->
-                                    <text class="pc-center" x="430" y="320" text-anchor="middle">Mon Parcours</text>
+                                    <!-- Titre manuscrit -->
+                                    <text class="pc-center" x="560" y="470" text-anchor="middle">Mon Parcours</text>
+                                    <path class="pc-center-line" d="M 468 492 C 520 500, 580 486, 652 493"/>
 
-                                    <!-- Étape 1 : BAC STI2D (année seule, clic → popup) -->
-                                    <g class="pc-node" data-popup="popup-bac" role="button" tabindex="0"
+                                    <!-- Feuilles d'ambiance qui flottent doucement -->
+                                    <g class="pc-ambient" transform="translate(712,430)">
+                                        <path class="pc-ambient-leaf" d="M 0 0 C 5 -10, 18 -14, 26 -8 C 20 3, 7 5, 0 0 Z" fill="var(--primary)" opacity="0.5"/>
+                                    </g>
+                                    <g class="pc-ambient pc-ambient--2" transform="translate(130,225)">
+                                        <path class="pc-ambient-leaf" d="M 0 0 C 5 -10, 18 -14, 26 -8 C 20 3, 7 5, 0 0 Z" fill="var(--accent)" opacity="0.45"/>
+                                    </g>
+
+                                    <!-- Étape 1 : BAC STI2D — première feuille -->
+                                    <g class="pc-node" data-popup="popup-bac" role="button" tabindex="0" transform="translate(280,560)"
                                         aria-label="2022 — BAC STI2D, cliquer pour voir les détails">
-                                        <circle cx="235" cy="442" r="16" fill="#F2CC8F"/>
-                                        <text class="pc-year" x="235" y="480" text-anchor="middle">2022</text>
+                                        <g class="pc-leafwrap" transform="rotate(-28)">
+                                            <g class="pc-leaf">
+                                                <path d="M 0 0 C 8 -16, 30 -24, 46 -14 C 40 4, 14 10, 0 0 Z" fill="#F2CC8F"/>
+                                                <path class="pc-vein" d="M 3 -2 C 16 -9, 30 -13, 42 -13" stroke="rgba(61,64,91,0.35)"/>
+                                            </g>
+                                        </g>
+                                        <circle cx="0" cy="0" r="13" fill="#F2CC8F"/>
+                                        <text class="pc-year" x="-20" y="10" text-anchor="end">2022</text>
                                     </g>
 
-                                    <!-- Étape 2 : Bachelor 1ère année (clic → popup) -->
-                                    <g class="pc-node" data-popup="popup-b1" role="button" tabindex="0"
+                                    <!-- Étape 2 : Bachelor 1ère année + stage I2M -->
+                                    <g class="pc-node" data-popup="popup-b1" role="button" tabindex="0" transform="translate(200,400)"
                                         aria-label="2024-2025 — Bachelor 1ère année, cliquer pour voir les détails">
-                                        <circle cx="246" cy="201" r="16" fill="var(--primary)"/>
-                                        <text class="pc-year" x="210" y="178" text-anchor="end">2024-2025</text>
+                                        <g class="pc-leafwrap" transform="scale(-1,1) rotate(-24)">
+                                            <g class="pc-leaf">
+                                                <path d="M 0 0 C 8 -16, 30 -24, 46 -14 C 40 4, 14 10, 0 0 Z" fill="var(--primary)"/>
+                                                <path class="pc-vein" d="M 3 -2 C 16 -9, 30 -13, 42 -13" stroke="rgba(251,248,243,0.55)"/>
+                                            </g>
+                                        </g>
+                                        <circle cx="0" cy="0" r="13" fill="var(--primary)"/>
+                                        <text class="pc-year" x="18" y="8" text-anchor="start">2024-2025</text>
                                     </g>
 
-                                    <!-- Étape 3 : Bachelor 2ème année + Pollen AM -->
-                                    <g class="pc-node" data-popup="popup-b2" role="button" tabindex="0"
+                                    <!-- Étape 3 : Bachelor 2ème année + stage Pollen AM -->
+                                    <g class="pc-node" data-popup="popup-b2" role="button" tabindex="0" transform="translate(430,260)"
                                         aria-label="2025-2026 — Bachelor 2ème année, cliquer pour voir les détails">
-                                        <circle cx="488" cy="113" r="16" fill="var(--accent)"/>
-                                        <text class="pc-year" x="488" y="90" text-anchor="middle">2025-2026</text>
+                                        <g class="pc-leafwrap" transform="rotate(-72)">
+                                            <g class="pc-leaf">
+                                                <path d="M 0 0 C 8 -16, 30 -24, 46 -14 C 40 4, 14 10, 0 0 Z" fill="var(--accent)"/>
+                                                <path class="pc-vein" d="M 3 -2 C 16 -9, 30 -13, 42 -13" stroke="rgba(251,248,243,0.55)"/>
+                                            </g>
+                                        </g>
+                                        <circle cx="0" cy="0" r="13" fill="var(--accent)"/>
+                                        <text class="pc-year" x="2" y="40" text-anchor="middle">2025-2026</text>
                                     </g>
 
-                                    <!-- Étape 4 : 3ème année, aujourd'hui -->
-                                    <g class="pc-node" data-popup="popup-b3" role="button" tabindex="0"
+                                    <!-- Étape 4 : 3ème année, aujourd'hui — la pousse la plus haute -->
+                                    <g class="pc-node" data-popup="popup-b3" role="button" tabindex="0" transform="translate(620,160)"
                                         aria-label="2026 — Bachelor 3ème année, cliquer pour voir les détails">
-                                        <circle class="pc-now-pulse" cx="652" cy="291" r="16" fill="none" stroke="var(--text-main)" stroke-width="2"/>
-                                        <circle cx="652" cy="291" r="16" fill="var(--text-main)"/>
-                                        <text class="pc-year" x="682" y="278" text-anchor="start">2026</text>
+                                        <g class="pc-leafwrap" transform="rotate(-55)">
+                                            <g class="pc-leaf">
+                                                <path d="M 0 0 C 8 -16, 30 -24, 46 -14 C 40 4, 14 10, 0 0 Z" fill="var(--text-main)"/>
+                                                <path class="pc-vein" d="M 3 -2 C 16 -9, 30 -13, 42 -13" stroke="rgba(251,248,243,0.55)"/>
+                                            </g>
+                                        </g>
+                                        <circle class="pc-now-pulse" cx="0" cy="0" r="13" fill="none" stroke="var(--text-main)" stroke-width="2"/>
+                                        <circle cx="0" cy="0" r="13" fill="var(--text-main)"/>
+                                        <text class="pc-year" x="-8" y="-26" text-anchor="end">2026</text>
                                     </g>
 
                                     <!-- La suite : alternance (cliquable → modale existante) -->
                                     <g id="parcours-alternance-chip" class="pc-chip" role="button" tabindex="0"
                                         aria-label="Alternance septembre 2026, voir mes modalités">
-                                        <rect x="428" y="562" width="268" height="60" rx="30" fill="#FFFFFF" stroke="var(--accent)" stroke-width="2"/>
-                                        <text class="pc-chip-title" x="562" y="588" text-anchor="middle">Alternance · sept. 2026</text>
-                                        <text class="pc-chip-sub" x="562" y="608" text-anchor="middle">voir mes modalités →</text>
+                                        <rect x="570" y="286" width="260" height="58" rx="29" fill="#FFFFFF" stroke="var(--accent)" stroke-width="2"/>
+                                        <text class="pc-chip-title" x="700" y="311" text-anchor="middle">Alternance · sept. 2026</text>
+                                        <text class="pc-chip-sub" x="700" y="331" text-anchor="middle">voir mes modalités →</text>
                                     </g>
                                 </svg>
                             </div>
@@ -5651,7 +5731,7 @@
                     gsap.set(kids, { autoAlpha: 0, y: 8 });
                     gsap.fromTo(popup,
                         { x: dx, y: dy, scale: sc, borderRadius: '50%', backgroundColor: color, autoAlpha: 1 },
-                        { x: 0, y: 0, scale: 1, borderRadius: '22px', backgroundColor: cssVar('--bg-secondary') || '#fff',
+                        { x: 0, y: 0, scale: 1, borderRadius: '26px', backgroundColor: cssVar('--bg-secondary') || '#fff',
                           duration: 0.55, ease: 'power3.out',
                           onComplete() { gsap.set(popup, { clearProps: 'backgroundColor,borderRadius,transform' }); } });
                     gsap.to(kids, { autoAlpha: 1, y: 0, duration: 0.35, stagger: 0.045, delay: 0.2, ease: 'power2.out' });
@@ -5732,18 +5812,22 @@
                 const nodes = svg.querySelectorAll('.pc-node');
                 const openBits = svg.querySelectorAll('.pc-arc-open, .pc-arrow');
                 const chevs = svg.querySelectorAll('.pc-chev');
-                const center = svg.querySelectorAll('.pc-center');
+                const center = svg.querySelectorAll('.pc-center, .pc-center-line');
+                const ground = svg.querySelectorAll('.pc-ground');
+                const ambient = svg.querySelectorAll('.pc-ambient');
 
-                /* 0. État initial : rien de dessiné */
+                /* 0. État initial : rien n'a encore poussé */
                 gsap.set(arc, { attr: { 'stroke-dasharray': 1, 'stroke-dashoffset': 1 } });
                 gsap.set(nodes, { opacity: 0, scale: 0.3, transformOrigin: 'center center' });
-                gsap.set(chevs, { opacity: 0, scale: 0, transformOrigin: 'center center' });
+                gsap.set(chevs, { opacity: 0, scale: 0, transformOrigin: 'left center' });
                 gsap.set(center, { opacity: 0 });
                 gsap.set(openBits, { opacity: 0 });
+                gsap.set(ground, { opacity: 0 });
+                gsap.set(ambient, { opacity: 0 });
                 gsap.set('#parcours-alternance-chip', { opacity: 0, y: 20 });
 
-                /* Timeline liée au scroll : on avance → le trait se dessine ;
-                   on remonte → il s'efface. scrub = suivi doux du scroll. */
+                /* Timeline liée au scroll : on avance → la plante pousse ;
+                   on remonte → elle se rétracte. scrub = suivi doux du scroll. */
                 const tlP = gsap.timeline({
                     scrollTrigger: {
                         trigger: '#parcours',
@@ -5753,20 +5837,31 @@
                     }
                 });
 
-                /* 1. Dessin du trait, linéaire au scroll (rendu manuscrit via feTurbulence) */
+                /* 1. Le sol et la graine apparaissent, puis la tige pousse
+                      depuis la graine, linéaire au scroll (rendu manuscrit) */
+                tlP.to(ground, { opacity: 1, ease: 'none', duration: 0.06 }, 0);
                 tlP.to(arc, { attr: { 'stroke-dashoffset': 0 }, ease: 'none', duration: 1 }, 0);
 
-                /* 2. Chevrons qui apparaissent au fil du tracé */
-                tlP.to(chevs, { opacity: 0.6, scale: 1, ease: 'power1.out', duration: 0.5, stagger: 0.18 }, 0.12);
+                /* 2. Petites pousses qui germent le long de la tige */
+                tlP.to(chevs, { opacity: 0.7, scale: 1, ease: 'back.out(2)', duration: 0.08, stagger: 0.2 }, 0.15);
 
-                /* 3. Checkpoints : chaque station s'illumine quand le trait l'atteint
-                   (pop du point + anneau « annonce de gare » qui se propage) */
-                const frac = [0.03, 0.33, 0.63, 0.97];
+                /* 3. Étapes : quand la tige atteint un nœud, le bourgeon éclot
+                      puis la FEUILLE SE DÉPLOIE depuis la tige (unfurl organique),
+                      avec un anneau de sève qui se propage */
+                const frac = [0.17, 0.39, 0.72, 0.97];
                 nodes.forEach(function(node, i) {
                     const at = (frac[i] != null) ? frac[i] : (i / nodes.length);
                     tlP.fromTo(node,
                         { opacity: 0, scale: 0.3 },
                         { opacity: 1, scale: 1, ease: 'back.out(2)', duration: 0.10 }, at);
+
+                    /* La feuille se déroule depuis son point d'attache */
+                    const leaf = node.querySelector('.pc-leaf');
+                    if (leaf) {
+                        tlP.fromTo(leaf,
+                            { rotation: -40, scale: 0.2, transformOrigin: 'left center' },
+                            { rotation: 0, scale: 1, ease: 'back.out(1.7)', duration: 0.12 }, at + 0.015);
+                    }
 
                     const circle = node.querySelector('circle:not(.pc-now-pulse):not(.pc-station-ring)');
                     if (circle) {
@@ -5783,14 +5878,16 @@
                     }
                 });
 
-                /* 4. Texte central « Mon Parcours » */
-                tlP.to(center, { opacity: 0.7, ease: 'power1.out', duration: 0.2 }, 0.72);
+                /* 4. Titre manuscrit + soulignage */
+                tlP.to(center, { opacity: 0.7, ease: 'power1.out', duration: 0.25 }, 0.5);
 
-                /* 5. Pointillés + flèche (prolongement du trait) */
-                tlP.to(openBits, { opacity: 1, ease: 'power1.out', duration: 0.12 }, 0.9);
+                /* 5. La crosse de fougère se déroule vers le futur,
+                      les feuilles d'ambiance prennent le vent */
+                tlP.to(openBits, { opacity: 1, ease: 'power1.out', duration: 0.1 }, 0.99);
+                tlP.to(ambient, { opacity: 1, ease: 'power1.out', duration: 0.1 }, 1.0);
 
-                /* 6. Chip alternance */
-                tlP.to('#parcours-alternance-chip', { opacity: 1, y: 0, ease: 'back.out(1.4)', duration: 0.12 }, 0.92);
+                /* 6. Bourgeon final : l'alternance */
+                tlP.to('#parcours-alternance-chip', { opacity: 1, y: 0, ease: 'back.out(1.4)', duration: 0.12 }, 1.03);
             })();
 
             /* CTA « alternance » (hero, nav, menu mobile) → même modale que la carte Documents complémentaires */
