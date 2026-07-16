@@ -2669,8 +2669,9 @@
 
         /* Arc principal : trait épais vert (inspiré HandWrittenTitle strokeWidth=12) */
         .pc-arc {
-            fill: none; stroke: var(--primary); stroke-width: 12;
-            stroke-linecap: round; stroke-linejoin: round; opacity: 0.90;
+            fill: none; stroke: var(--primary); stroke-width: 15;
+            stroke-linecap: round; stroke-linejoin: round; opacity: 0.92;
+            filter: drop-shadow(0 3px 8px rgba(129,178,154,0.28));
         }
         /* Segment ouvert : pointillés accent */
         .pc-arc-open {
@@ -5598,7 +5599,7 @@
 
                 /* 0. État initial : tout caché */
                 gsap.set(arc, { attr: { 'stroke-dasharray': '1', 'stroke-dashoffset': '1' } });
-                gsap.set(nodes, { opacity: 0, y: 18 });
+                gsap.set(nodes, { opacity: 0, scale: 0.35, transformOrigin: 'center center' });
                 gsap.set(chevs, { opacity: 0, scale: 0, transformOrigin: 'center center' });
                 gsap.set(center, { opacity: 0 });
                 gsap.set(openBits, { opacity: 0 });
@@ -5609,34 +5610,34 @@
                     scrollTrigger: { trigger: '#parcours', start: 'top 75%', once: true }
                 });
 
-                /* 1. Dessiner l'arc : durée 2.5s, easing fluide comme HandWrittenTitle
+                /* 1. Dessiner l'arc : durée 2.6s, easing fluide comme HandWrittenTitle
                       cubic-bezier(0.43, 0.13, 0.23, 0.96) ≈ power3.inOut */
+                var DRAW = 2.6;
                 tlP.to(arc, {
                     attr: { 'stroke-dashoffset': '0' },
-                    duration: 2.5, ease: 'power3.inOut'
+                    duration: DRAW, ease: 'power3.inOut'
                 }, 0)
 
-                /* 2. Chevrons le long de l'arc */
+                /* 2. Chevrons le long de l'arc : apparaissent au fil du tracé */
                 .to(chevs, {
                     opacity: 0.6, scale: 1, duration: 0.4,
-                    stagger: 0.15, ease: 'back.out(2)'
-                }, 0.8)
+                    stagger: 0.5, ease: 'back.out(2)'
+                }, 0.7);
 
-                /* 3. Texte central « Mon Parcours » : fade doux */
-                .to(center, { opacity: 0.7, duration: 0.9, ease: 'power2.out' }, 1.0);
-
-                /* 4. Checkpoints (nœuds) : animation échelonnée façon « annonce de gare »
-                   Chaque nœud apparaît avec un slide+fade, puis un anneau pulse autour (station ping) */
+                /* 3. Checkpoints (nœuds) : « annonce de gare de métro »
+                   Chaque station s'illumine PILE au moment où le trait l'atteint,
+                   avec un pop doux du point + un anneau qui se propage (ping station). */
+                var nodeAt = [0.12, 0.95, 1.45, 2.45]; /* progression synchronisée au tracé (easing power3.inOut) */
                 nodes.forEach(function(node, i) {
-                    var delay = 0.5 + i * 0.45; /* échelonnement généreux */
+                    var delay = (nodeAt[i] != null) ? nodeAt[i] : (0.4 + i * 0.6);
 
-                    /* Apparition du nœud */
-                    tlP.to(node, {
-                        opacity: 1, y: 0, duration: 0.6,
-                        ease: 'power2.out'
-                    }, delay);
+                    /* Apparition du point : léger pop (façon station qui s'allume) */
+                    tlP.fromTo(node,
+                        { opacity: 0, scale: 0.35, transformOrigin: 'center center' },
+                        { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(2.4)' },
+                        delay);
 
-                    /* Anneau « station » : créer un cercle dynamiquement */
+                    /* Anneau « station » qui se propage doucement */
                     var circle = node.querySelector('circle:not(.pc-now-pulse)');
                     if (circle) {
                         var cx = circle.getAttribute('cx');
@@ -5647,30 +5648,29 @@
                         ring.setAttribute('cy', cy);
                         ring.setAttribute('r', r);
                         ring.classList.add('pc-station-ring');
-                        node.appendChild(ring);
+                        node.insertBefore(ring, node.firstChild);
 
-                        /* Pulse de l'anneau après l'apparition */
-                        tlP.to(ring, {
-                            opacity: 0.8, duration: 0.01
-                        }, delay + 0.3)
-                        .to(ring, {
-                            attr: { r: parseFloat(r) * 2.8 },
-                            opacity: 0,
-                            duration: 0.7,
-                            ease: 'power2.out'
-                        }, delay + 0.31);
+                        tlP.set(ring, { opacity: 0.55 }, delay + 0.18)
+                           .to(ring, {
+                               attr: { r: parseFloat(r) * 2.9 },
+                               opacity: 0,
+                               duration: 1.0,
+                               ease: 'power1.out'
+                           }, delay + 0.18);
                     }
                 });
 
-                /* 5. Segment ouvert + flèche */
-                var lastNodeDelay = 0.5 + (nodes.length - 1) * 0.45;
-                tlP.to(openBits, { opacity: 1, duration: 0.5, ease: 'power2.out' }, lastNodeDelay + 0.4)
+                /* 4. Texte central « Mon Parcours » : fade doux, après le tracé */
+                tlP.to(center, { opacity: 0.7, duration: 1.0, ease: 'power2.out' }, DRAW - 0.5);
 
-                /* 6. Chip alternance : bounce in */
+                /* 5. Segment ouvert (pointillés) + flèche : prolongent le trait */
+                tlP.to(openBits, { opacity: 1, duration: 0.6, ease: 'power2.out' }, DRAW + 0.05)
+
+                /* 6. Chip alternance : bounce in, dernière étape */
                 .to('#parcours-alternance-chip', {
                     opacity: 1, y: 0, duration: 0.65,
                     ease: 'back.out(1.6)'
-                }, lastNodeDelay + 0.7);
+                }, DRAW + 0.35);
             })();
 
             /* CTA « alternance » (hero, nav, menu mobile) → même modale que la carte Documents complémentaires */
