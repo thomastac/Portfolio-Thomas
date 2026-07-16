@@ -2667,17 +2667,24 @@
         .parcours-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
         .parcours-svg { display: block; width: 100%; min-width: 640px; height: auto; margin: 0 auto; }
 
-        /* Arc principal : trait épais vert (inspiré HandWrittenTitle strokeWidth=12) */
+        /* Arc principal : trait épais vert, tracé « à la main » (tremblé organique) */
         .pc-arc {
             fill: none; stroke: var(--primary); stroke-width: 15;
-            stroke-linecap: round; stroke-linejoin: round; opacity: 0.92;
-            filter: drop-shadow(0 3px 8px rgba(129,178,154,0.28));
+            stroke-linecap: round; stroke-linejoin: round; opacity: 0.94;
+            filter: url(#pc-rough) drop-shadow(0 3px 8px rgba(129,178,154,0.26));
         }
-        /* Segment ouvert : pointillés accent */
+        /* Segment ouvert : pointillés accent, tracé main aussi */
         .pc-arc-open {
             fill: none; stroke: var(--accent); stroke-width: 6;
             stroke-linecap: round; stroke-dasharray: 4 14;
+            filter: url(#pc-rough);
         }
+        /* Anti-sélection bleue au clic/tap sur les checkpoints */
+        .parcours-svg { -webkit-tap-highlight-color: transparent; }
+        .parcours-svg text, .pc-node, .pc-chip {
+            -webkit-user-select: none; -moz-user-select: none; user-select: none;
+        }
+        .pc-node:focus { outline: none; }
         .pc-arrow { fill: var(--accent); }
         .pc-chev { fill: var(--primary); opacity: 0.6; }
 
@@ -2755,42 +2762,76 @@
         }
         .pc-popup-overlay.open { opacity: 1; visibility: visible; }
         .pc-popup {
-            background: var(--bg-secondary, #fff); border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            max-width: 480px; width: 100%; padding: 2rem 2rem 1.8rem;
-            position: relative;
-            transform: translateY(30px) scale(0.95);
-            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            --pc-pop-color: var(--primary);
+            background: var(--bg-secondary, #fff); border-radius: 22px;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.28);
+            max-width: 460px; width: 100%;
+            padding: calc(1.7rem + 8px) 1.9rem 1.8rem;
+            position: relative; overflow: hidden;
+            transform-origin: center center; will-change: transform;
         }
-        .pc-popup-overlay.open .pc-popup { transform: translateY(0) scale(1); }
+        /* Bandeau d'accent coloré (couleur de l'étape) */
+        .pc-popup::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+            background: var(--pc-pop-color);
+        }
         .pc-popup-close {
-            position: absolute; top: 0.6rem; right: 0.6rem;
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            background: none; border: none; cursor: pointer; color: #999; font-size: 1.4rem;
-            transition: color 0.2s, transform 0.2s;
+            position: absolute; top: 0.7rem; right: 0.7rem; z-index: 2;
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.04); border: none; cursor: pointer;
+            color: #8a8a99; font-size: 1.3rem; line-height: 1;
+            transition: color 0.2s, background 0.2s, transform 0.2s;
         }
-        .pc-popup-close:hover { color: var(--accent); transform: scale(1.2); }
+        .pc-popup-close:hover { color: #fff; background: var(--pc-pop-color); transform: rotate(90deg); }
         .pc-popup-year {
-            font-family: 'Caveat', cursive; font-size: 1.8rem; font-weight: 700;
-            color: var(--primary); margin-bottom: 0.3rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-family: 'Caveat', cursive; font-size: 1.9rem; font-weight: 700;
+            color: var(--pc-pop-color); margin-bottom: 0.35rem; line-height: 1;
+        }
+        .pc-popup-year::before {
+            content: ''; width: 12px; height: 12px; border-radius: 50%;
+            background: var(--pc-pop-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pc-pop-color) 22%, transparent);
         }
         .pc-popup-title {
-            font-size: 1.25rem; font-weight: 700; color: var(--text-main);
-            margin-bottom: 0.25rem;
+            font-size: 1.35rem; font-weight: 700; color: var(--text-main);
+            margin-bottom: 0.2rem; letter-spacing: -0.01em;
         }
         .pc-popup-place {
-            font-size: 0.9rem; color: var(--accent); font-weight: 600;
-            margin-bottom: 0.8rem;
+            font-size: 0.9rem; color: var(--pc-pop-color); font-weight: 600;
+            margin-bottom: 0.85rem;
         }
         .pc-popup-desc {
-            font-size: 0.88rem; color: #6b7280; line-height: 1.6;
+            font-size: 0.9rem; color: #6b7280; line-height: 1.65;
         }
-        .pc-popup-badge {
-            display: inline-block; margin-top: 1rem;
-            padding: 0.3rem 0.9rem; border-radius: 20px;
-            background: var(--primary); color: #fff;
-            font-size: 0.78rem; font-weight: 600;
+        /* Bouton « Voir la fiche mission » */
+        .pc-popup-mission {
+            display: block; width: 100%; text-align: left; cursor: pointer;
+            margin-top: 1.1rem; padding: 0.85rem 1.05rem; border-radius: 14px;
+            border: 1.5px solid color-mix(in srgb, var(--pc-pop-color) 45%, transparent);
+            background: color-mix(in srgb, var(--pc-pop-color) 10%, #fff);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
         }
+        .pc-popup-mission:hover, .pc-popup-mission:focus-visible {
+            transform: translateY(-2px);
+            background: color-mix(in srgb, var(--pc-pop-color) 16%, #fff);
+            box-shadow: 0 10px 24px color-mix(in srgb, var(--pc-pop-color) 30%, transparent);
+            outline: none;
+        }
+        .pc-popup-mission__tag {
+            display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--pc-pop-color); margin-bottom: 0.1rem;
+        }
+        .pc-popup-mission__name {
+            display: block; font-size: 0.98rem; font-weight: 700; color: var(--text-main);
+        }
+        .pc-popup-mission__go {
+            display: inline-block; margin-top: 0.35rem; font-size: 0.82rem; font-weight: 600;
+            color: var(--pc-pop-color);
+            transition: transform 0.22s ease;
+        }
+        .pc-popup-mission:hover .pc-popup-mission__go { transform: translateX(4px); }
+        .pc-popup-stage__desc { margin-top: 0.7rem; font-size: 0.84rem; }
 
         @media (prefers-reduced-motion: reduce) {
             .pc-now-pulse { animation: none; }
@@ -3593,7 +3634,15 @@
                                 <svg class="parcours-svg" viewBox="0 0 880 660" role="img"
                                     aria-label="Mon parcours : BAC STI2D, Bachelor 1ère année + stage I2M, 2ème année + Pollen AM, 3ème année en cours, puis alternance septembre 2026">
 
-                                    <!-- Arc principal (¾ de boucle) — trait épais vert, dessiné façon HandWrittenTitle -->
+                                    <!-- Filtre « tracé à la main » : léger tremblé organique du trait -->
+                                    <defs>
+                                        <filter id="pc-rough" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="noise"/>
+                                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+                                        </filter>
+                                    </defs>
+
+                                    <!-- Arc principal (¾ de boucle) — trait épais vert, dessiné à la main -->
                                     <path id="pc-arc" class="pc-arc"
                                         d="M 235 442 A 225 225 0 1 1 652 291" pathLength="1"/>
 
@@ -3667,8 +3716,12 @@
                                 <p class="pc-popup-title">Bachelor 1ʳᵉ année</p>
                                 <p class="pc-popup-place">Arts et Métiers · Bordeaux-Talence</p>
                                 <p class="pc-popup-desc">Formation en sciences de l'ingénieur au sein du Bachelor de Technologie de l'ENSAM.</p>
-                                <span class="pc-popup-badge">Stage I2M · fév. 2025</span>
-                                <p class="pc-popup-desc" style="margin-top:0.6rem;">Conception d'une cage de protection pour vérin à haute vitesse et d'un support pour enceinte climatique au laboratoire I2M (Institut de Mécanique et d'Ingénierie). Durée : 1 mois.</p>
+                                <button type="button" class="pc-popup-mission" data-mission="stage-i2m">
+                                    <span class="pc-popup-mission__tag">Stage · fév. 2025</span>
+                                    <span class="pc-popup-mission__name">Stage I2M — Conception R&amp;D</span>
+                                    <span class="pc-popup-mission__go">Voir la fiche mission&nbsp;→</span>
+                                </button>
+                                <p class="pc-popup-desc pc-popup-stage__desc">Conception d'une cage de protection pour vérin à haute vitesse et d'un support pour enceinte climatique au laboratoire I2M (Institut de Mécanique et d'Ingénierie). Durée : 1 mois.</p>
                             </div>
                         </div>
                         <div class="pc-popup-overlay" id="popup-b2">
@@ -3678,8 +3731,12 @@
                                 <p class="pc-popup-title">Bachelor 2ᵉ année</p>
                                 <p class="pc-popup-place">Arts et Métiers · Bordeaux-Talence</p>
                                 <p class="pc-popup-desc">Poursuite de la formation avec approfondissement en conception mécanique et fabrication.</p>
-                                <span class="pc-popup-badge">Stage Pollen AM · avr. 2026</span>
-                                <p class="pc-popup-desc" style="margin-top:0.6rem;">Technicien de laboratoire en fabrication additive — Maintenance du parc d'imprimantes 3D industrielles, câblage, conception d'un support de liaison de ventilateur (SolidWorks) et réglage des profils d'impression (Cura).</p>
+                                <button type="button" class="pc-popup-mission" data-mission="pollen-am">
+                                    <span class="pc-popup-mission__tag">Stage · avr. 2026</span>
+                                    <span class="pc-popup-mission__name">Stage Pollen AM — Fabrication additive</span>
+                                    <span class="pc-popup-mission__go">Voir la fiche mission&nbsp;→</span>
+                                </button>
+                                <p class="pc-popup-desc pc-popup-stage__desc">Technicien de laboratoire en fabrication additive — Maintenance du parc d'imprimantes 3D industrielles, câblage, conception d'un support de liaison de ventilateur (SolidWorks) et réglage des profils d'impression (Cura).</p>
                             </div>
                         </div>
                         <div class="pc-popup-overlay" id="popup-b3">
@@ -5553,21 +5610,75 @@
                     chip.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAlt(); } });
                 }
 
-                /* --- Popups : clic sur un nœud SVG --- */
-                function openPopup(id) {
+                /* --- Couleur d'accent d'une étape (lue sur le cercle du nœud) --- */
+                const rootStyle = getComputedStyle(document.documentElement);
+                function cssVar(name) { return (rootStyle.getPropertyValue(name) || '').trim(); }
+                function nodeColor(node) {
+                    const c = node && node.querySelector('circle:not(.pc-now-pulse):not(.pc-station-ring)');
+                    const f = c ? c.getAttribute('fill') : '';
+                    if (!f) return cssVar('--primary') || '#81B29A';
+                    const m = f.match(/var\((--[\w-]+)\)/);
+                    if (m) return cssVar(m[1]) || '#81B29A';
+                    return f;
+                }
+                function bodyModalCleanup() {
+                    if (!document.querySelector('.pc-popup-overlay.open, .modal.open')) {
+                        document.body.classList.remove('modal-open');
+                    }
+                }
+
+                /* --- Popups : le POINT grandit pour former la fiche (morph) --- */
+                function openPopup(id, node) {
                     const overlay = document.getElementById(id);
                     if (!overlay) return;
+                    const popup = overlay.querySelector('.pc-popup');
+                    const color = nodeColor(node);
+                    if (popup) popup.style.setProperty('--pc-pop-color', color);
+                    overlay._srcNode = node || null;
                     overlay.classList.add('open');
                     document.body.classList.add('modal-open');
+                    if (reduceMoP || !popup || !node || typeof gsap === 'undefined') return;
+
+                    const src = node.querySelector('circle:not(.pc-now-pulse):not(.pc-station-ring)') || node;
+                    const nr = src.getBoundingClientRect();
+                    gsap.set(popup, { clearProps: 'transform,borderRadius,backgroundColor,opacity,visibility' });
+                    const pr = popup.getBoundingClientRect();
+                    if (!pr.width) return;
+                    const dx = (nr.left + nr.width / 2) - (pr.left + pr.width / 2);
+                    const dy = (nr.top + nr.height / 2) - (pr.top + pr.height / 2);
+                    const sc = Math.max(nr.width, 22) / pr.width;
+                    const kids = Array.from(popup.children);
+                    gsap.set(kids, { autoAlpha: 0, y: 8 });
+                    gsap.fromTo(popup,
+                        { x: dx, y: dy, scale: sc, borderRadius: '50%', backgroundColor: color, autoAlpha: 1 },
+                        { x: 0, y: 0, scale: 1, borderRadius: '22px', backgroundColor: cssVar('--bg-secondary') || '#fff',
+                          duration: 0.55, ease: 'power3.out',
+                          onComplete() { gsap.set(popup, { clearProps: 'backgroundColor,borderRadius,transform' }); } });
+                    gsap.to(kids, { autoAlpha: 1, y: 0, duration: 0.35, stagger: 0.045, delay: 0.2, ease: 'power2.out' });
                 }
                 function closePopup(overlay) {
-                    overlay.classList.remove('open');
-                    document.body.classList.remove('modal-open');
+                    if (!overlay) return;
+                    const popup = overlay.querySelector('.pc-popup');
+                    const node = overlay._srcNode;
+                    const finish = function() { overlay.classList.remove('open'); bodyModalCleanup(); };
+                    if (reduceMoP || !popup || !node || typeof gsap === 'undefined') {
+                        finish(); if (popup) gsap.set(popup, { clearProps: 'all' }); return;
+                    }
+                    const src = node.querySelector('circle:not(.pc-now-pulse):not(.pc-station-ring)') || node;
+                    const nr = src.getBoundingClientRect();
+                    gsap.set(popup, { x: 0, y: 0, scale: 1 });
+                    const pr = popup.getBoundingClientRect();
+                    const dx = (nr.left + nr.width / 2) - (pr.left + pr.width / 2);
+                    const dy = (nr.top + nr.height / 2) - (pr.top + pr.height / 2);
+                    const sc = Math.max(nr.width, 22) / pr.width;
+                    gsap.to(popup, { x: dx, y: dy, scale: sc, borderRadius: '50%', backgroundColor: nodeColor(node),
+                        autoAlpha: 0, duration: 0.4, ease: 'power2.in',
+                        onComplete() { finish(); gsap.set(popup, { clearProps: 'all' }); } });
                 }
 
                 svg.querySelectorAll('.pc-node[data-popup]').forEach(function(node) {
                     var popupId = node.getAttribute('data-popup');
-                    var handler = function(e) { e.stopPropagation(); openPopup(popupId); };
+                    var handler = function(e) { e.stopPropagation(); openPopup(popupId, node); };
                     node.addEventListener('click', handler);
                     node.addEventListener('keydown', function(e) {
                         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(e); }
@@ -5588,7 +5699,33 @@
                     }
                 });
 
-                /* --- Animation HandWrittenTitle (GSAP) --- */
+                /* --- Clic sur un STAGE → ferme le pop-up et ouvre la fiche mission --- */
+                document.querySelectorAll('.pc-popup-mission[data-mission]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const key = btn.getAttribute('data-mission');
+                        const overlay = btn.closest('.pc-popup-overlay');
+                        /* Fermeture instantanée du pop-up parcours (évite tout chevauchement
+                           avec la fiche mission qui passe au premier plan) */
+                        if (overlay) {
+                            const p = overlay.querySelector('.pc-popup');
+                            overlay.style.transition = 'none';
+                            overlay.classList.remove('open');
+                            if (p && typeof gsap !== 'undefined') gsap.set(p, { clearProps: 'all' });
+                            void overlay.offsetWidth;
+                            overlay.style.transition = '';
+                        }
+                        setTimeout(function() {
+                            const ok = (typeof window.openFicheMission === 'function') && window.openFicheMission(key);
+                            if (!ok) {
+                                const s = document.getElementById('fiches-missions');
+                                if (s) s.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }, 140);
+                    });
+                });
+
+                /* --- Tracé « à la main » piloté par le SCROLL (scrub bidirectionnel) --- */
                 if (reduceMoP) return;
 
                 const arc = svg.querySelector('#pc-arc');
@@ -5597,80 +5734,63 @@
                 const chevs = svg.querySelectorAll('.pc-chev');
                 const center = svg.querySelectorAll('.pc-center');
 
-                /* 0. État initial : tout caché */
-                gsap.set(arc, { attr: { 'stroke-dasharray': '1', 'stroke-dashoffset': '1' } });
-                gsap.set(nodes, { opacity: 0, scale: 0.35, transformOrigin: 'center center' });
+                /* 0. État initial : rien de dessiné */
+                gsap.set(arc, { attr: { 'stroke-dasharray': 1, 'stroke-dashoffset': 1 } });
+                gsap.set(nodes, { opacity: 0, scale: 0.3, transformOrigin: 'center center' });
                 gsap.set(chevs, { opacity: 0, scale: 0, transformOrigin: 'center center' });
                 gsap.set(center, { opacity: 0 });
                 gsap.set(openBits, { opacity: 0 });
                 gsap.set('#parcours-alternance-chip', { opacity: 0, y: 20 });
 
-                /* Timeline déclenchée au scroll */
+                /* Timeline liée au scroll : on avance → le trait se dessine ;
+                   on remonte → il s'efface. scrub = suivi doux du scroll. */
                 const tlP = gsap.timeline({
-                    scrollTrigger: { trigger: '#parcours', start: 'top 75%', once: true }
-                });
-
-                /* 1. Dessiner l'arc : durée 2.6s, easing fluide comme HandWrittenTitle
-                      cubic-bezier(0.43, 0.13, 0.23, 0.96) ≈ power3.inOut */
-                var DRAW = 2.6;
-                tlP.to(arc, {
-                    attr: { 'stroke-dashoffset': '0' },
-                    duration: DRAW, ease: 'power3.inOut'
-                }, 0)
-
-                /* 2. Chevrons le long de l'arc : apparaissent au fil du tracé */
-                .to(chevs, {
-                    opacity: 0.6, scale: 1, duration: 0.4,
-                    stagger: 0.5, ease: 'back.out(2)'
-                }, 0.7);
-
-                /* 3. Checkpoints (nœuds) : « annonce de gare de métro »
-                   Chaque station s'illumine PILE au moment où le trait l'atteint,
-                   avec un pop doux du point + un anneau qui se propage (ping station). */
-                var nodeAt = [0.12, 0.95, 1.45, 2.45]; /* progression synchronisée au tracé (easing power3.inOut) */
-                nodes.forEach(function(node, i) {
-                    var delay = (nodeAt[i] != null) ? nodeAt[i] : (0.4 + i * 0.6);
-
-                    /* Apparition du point : léger pop (façon station qui s'allume) */
-                    tlP.fromTo(node,
-                        { opacity: 0, scale: 0.35, transformOrigin: 'center center' },
-                        { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(2.4)' },
-                        delay);
-
-                    /* Anneau « station » qui se propage doucement */
-                    var circle = node.querySelector('circle:not(.pc-now-pulse)');
-                    if (circle) {
-                        var cx = circle.getAttribute('cx');
-                        var cy = circle.getAttribute('cy');
-                        var r = circle.getAttribute('r');
-                        var ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                        ring.setAttribute('cx', cx);
-                        ring.setAttribute('cy', cy);
-                        ring.setAttribute('r', r);
-                        ring.classList.add('pc-station-ring');
-                        node.insertBefore(ring, node.firstChild);
-
-                        tlP.set(ring, { opacity: 0.55 }, delay + 0.18)
-                           .to(ring, {
-                               attr: { r: parseFloat(r) * 2.9 },
-                               opacity: 0,
-                               duration: 1.0,
-                               ease: 'power1.out'
-                           }, delay + 0.18);
+                    scrollTrigger: {
+                        trigger: '#parcours',
+                        start: 'top 82%',
+                        end: 'bottom 58%',
+                        scrub: 0.8
                     }
                 });
 
-                /* 4. Texte central « Mon Parcours » : fade doux, après le tracé */
-                tlP.to(center, { opacity: 0.7, duration: 1.0, ease: 'power2.out' }, DRAW - 0.5);
+                /* 1. Dessin du trait, linéaire au scroll (rendu manuscrit via feTurbulence) */
+                tlP.to(arc, { attr: { 'stroke-dashoffset': 0 }, ease: 'none', duration: 1 }, 0);
 
-                /* 5. Segment ouvert (pointillés) + flèche : prolongent le trait */
-                tlP.to(openBits, { opacity: 1, duration: 0.6, ease: 'power2.out' }, DRAW + 0.05)
+                /* 2. Chevrons qui apparaissent au fil du tracé */
+                tlP.to(chevs, { opacity: 0.6, scale: 1, ease: 'power1.out', duration: 0.5, stagger: 0.18 }, 0.12);
 
-                /* 6. Chip alternance : bounce in, dernière étape */
-                .to('#parcours-alternance-chip', {
-                    opacity: 1, y: 0, duration: 0.65,
-                    ease: 'back.out(1.6)'
-                }, DRAW + 0.35);
+                /* 3. Checkpoints : chaque station s'illumine quand le trait l'atteint
+                   (pop du point + anneau « annonce de gare » qui se propage) */
+                const frac = [0.03, 0.33, 0.63, 0.97];
+                nodes.forEach(function(node, i) {
+                    const at = (frac[i] != null) ? frac[i] : (i / nodes.length);
+                    tlP.fromTo(node,
+                        { opacity: 0, scale: 0.3 },
+                        { opacity: 1, scale: 1, ease: 'back.out(2)', duration: 0.10 }, at);
+
+                    const circle = node.querySelector('circle:not(.pc-now-pulse):not(.pc-station-ring)');
+                    if (circle) {
+                        const r = circle.getAttribute('r');
+                        const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        ring.setAttribute('cx', circle.getAttribute('cx'));
+                        ring.setAttribute('cy', circle.getAttribute('cy'));
+                        ring.setAttribute('r', r);
+                        ring.classList.add('pc-station-ring');
+                        node.insertBefore(ring, node.firstChild);
+                        tlP.fromTo(ring,
+                            { opacity: 0.5, attr: { r: r } },
+                            { opacity: 0, attr: { r: parseFloat(r) * 2.7 }, ease: 'power1.out', duration: 0.14 }, at + 0.02);
+                    }
+                });
+
+                /* 4. Texte central « Mon Parcours » */
+                tlP.to(center, { opacity: 0.7, ease: 'power1.out', duration: 0.2 }, 0.72);
+
+                /* 5. Pointillés + flèche (prolongement du trait) */
+                tlP.to(openBits, { opacity: 1, ease: 'power1.out', duration: 0.12 }, 0.9);
+
+                /* 6. Chip alternance */
+                tlP.to('#parcours-alternance-chip', { opacity: 1, y: 0, ease: 'back.out(1.4)', duration: 0.12 }, 0.92);
             })();
 
             /* CTA « alternance » (hero, nav, menu mobile) → même modale que la carte Documents complémentaires */
@@ -6636,6 +6756,19 @@
                         stackModal.classList.add('open');
                         /* morph : la carte s'agrandit en modale */
                         const r = card.getBoundingClientRect();
+                        if (r.width < 4 || r.height < 4) {
+                            /* carte masquée (autre vue / ouverture par clé) : ouverture centrée sans morph */
+                            lastCardRect = null;
+                            stackModalBox.style.transition = 'none';
+                            stackModalBox.style.transform = 'scale(0.92)';
+                            stackModalBox.style.opacity = '0';
+                            requestAnimationFrame(() => {
+                                stackModalBox.style.transition = 'transform 0.45s cubic-bezier(0.34,1.3,0.5,1), opacity 0.35s ease';
+                                stackModalBox.style.transform = 'scale(1)';
+                                stackModalBox.style.opacity = '1';
+                            });
+                            return;
+                        }
                         lastCardRect = r;
                         stackModalBox.style.transition = 'none';
                         stackModalBox.style.transform = 'none';
@@ -6680,6 +6813,13 @@
                        (lead + images du contenu). Plusieurs images = plusieurs items,
                        et un clic sur un item ouvre la bonne image en grand. */
                     stackCards.forEach(card => card.addEventListener('click', () => openStackModal(card)));
+
+                    /* Ouverture d'une fiche mission par sa clé (utilisé depuis « Mon Parcours ») */
+                    window.openFicheMission = function (key) {
+                        const c = stackGrid.querySelector('.stack-card[data-mission="' + key + '"]');
+                        if (c) { openStackModal(c); return true; }
+                        return false;
+                    };
                     document.getElementById('stack-modal-close')?.addEventListener('click', closeStackModal);
                     stackModal?.addEventListener('click', (e) => { if (e.target === stackModal) closeStackModal(); });
                     window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && stackModal?.classList.contains('open')) closeStackModal(); });
