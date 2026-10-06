@@ -1202,6 +1202,27 @@
             padding: 0 1.5rem;
         }
 
+        .cloud-skip-hint {
+            margin-top: 1.5rem;
+            font-family: 'Caveat', cursive;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5a7a9a;
+            opacity: 0;
+            animation: cloud-skip-pulse 2.4s ease-in-out 2.6s infinite;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        @keyframes cloud-skip-pulse {
+            0%, 100% { opacity: 0.45; transform: translateY(0); }
+            50% { opacity: 0.9; transform: translateY(2px); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cloud-skip-hint { animation: fade-in 0.4s ease 0.2s forwards; opacity: 0.7; }
+        }
+
         .map-hint-bar {
             position: absolute;
             bottom: 24px;
@@ -3155,6 +3176,7 @@
                 <p class="cloud-label">Bienvenue sur mon portfolio</p>
                 <p class="cloud-sublabel">Thomas CHONGCHAREUN &nbsp;|&nbsp; 3ème année Bachelor de Technologie ENSAM
                 </p>
+                <p class="cloud-skip-hint" aria-hidden="true">Cliquez pour entrer →</p>
             </div><!-- /#cloud-overlay -->
 
             <!-- ══════════════════════════════════════════════════════════════
@@ -3566,7 +3588,7 @@
                                                 <div class="cv-section-content">
                                                     <div>
                                                         <div class="pt-2 pb-4">
-                                                            <p class="font-bold">Avril 2026 - En cours</p>
+                                                            <p class="font-bold">Juin – Août 2026</p>
                                                             <p>Technicien de laboratoire en fabrication additive — Pollen AM</p>
                                                             <p class="text-xs mt-1" style="color:#6b7280;">Maintenance du parc d'imprimantes 3D industrielles, câblage, conception d'un support de liaison de ventilateur (SolidWorks) et réglage des profils d'impression (Cura).</p>
                                                         </div>
@@ -3677,7 +3699,7 @@
                                 <p class="pc-popup-title">Bachelor 2ᵉ année</p>
                                 <p class="pc-popup-place">Arts et Métiers · Bordeaux-Talence</p>
                                 <p class="pc-popup-desc">Poursuite de la formation avec approfondissement en conception mécanique et fabrication.</p>
-                                <span class="pc-popup-badge">Stage Pollen AM · avr. 2026</span>
+                                <span class="pc-popup-badge">Stage Pollen AM · été 2026</span>
                                 <p class="pc-popup-desc" style="margin-top:0.6rem;">Technicien de laboratoire en fabrication additive — Maintenance du parc d'imprimantes 3D industrielles, câblage, conception d'un support de liaison de ventilateur (SolidWorks) et réglage des profils d'impression (Cura).</p>
                             </div>
                         </div>
@@ -3924,15 +3946,10 @@
                         <input type="text" id="rf-duration" placeholder="Ex: 12 mois, dès sept."
                             list="duration-suggestions" autocomplete="off">
                         <datalist id="duration-suggestions">
-                            <option value="2 mois"></option>
-                            <option value="3 mois"></option>
-                            <option value="4 mois"></option>
-                            <option value="6 mois"></option>
                             <option value="12 mois"></option>
                             <option value="24 mois (alternance)"></option>
-                            <option value="Dès septembre 2025"></option>
-                            <option value="Dès janvier 2026"></option>
                             <option value="Dès septembre 2026"></option>
+                            <option value="Dès janvier 2027"></option>
                             <option value="À définir ensemble"></option>
                         </datalist>
                     </div>
@@ -4169,9 +4186,9 @@
         const mapLocations = [
             {
                 id: 'pollen-am', lat: 48.8127, lng: 2.3849,
-                emoji: '⚙️', color: '#E07A5F', isCurrent: true,
+                emoji: '⚙️', color: '#E07A5F',
                 title: 'Stage technicien chez Pollen AM',
-                period: 'Actuellement (4 mois)',
+                period: 'Juin – Août 2026',
                 description: 'Stage technicien au sein de Pollen AM, spécialiste de la fabrication additive industrielle. 52 Av. Pierre Semard, Ivry-sur-Seine.',
                 missionTitle: 'Technicien de laboratoire en Fabrication additive',
                 missions: [
@@ -4198,10 +4215,12 @@
             },
             {
                 id: 'ensam', lat: 44.8045, lng: -0.6063,
-                emoji: '🎓', color: '#81B29A',
+                emoji: '🎓', color: '#81B29A', isCurrent: true,
+                currentBadge: 'Actuellement en 3ᵉ année à l\'ENSAM',
+                currentSub: 'Disponible pour une alternance 2026-2027',
                 title: 'Bachelor de Technologie ENSAM',
-                period: 'Présent (3ème année)',
-                description: 'Formation en Bachelor de Technologie aux Arts et Métiers, campus de Bordeaux-Talence.',
+                period: 'Présent · 3ᵉ année',
+                description: 'Formation en Bachelor de Technologie aux Arts et Métiers, campus de Bordeaux-Talence. Je recherche une alternance en conception et production mécanique pour 2026-2027.',
                 photo: null,
                 links: [{ text: 'Mon CV complet', anchor: '#cv', type: 'primary' }]
             },
@@ -4281,8 +4300,21 @@
                 return;
             }
 
-            /* Cloud forms (1.4s) then floats ~2s, then auto-rises */
-            setTimeout(() => {
+            /* Intro « nuage » : jouée par défaut, mais on peut la passer d'un clic
+               ou d'une touche (Entrée/Espace/Échap) — un recruteur pressé n'attend pas.
+               En mode « mouvement réduit » (prefers-reduced-motion), l'intro est
+               fortement raccourcie. */
+            const reduceMoCloud = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            let cloudExiting = false;
+            let cloudAutoTimer = null;
+
+            function startCloudExit() {
+                if (cloudExiting) return;
+                cloudExiting = true;
+                if (cloudAutoTimer) clearTimeout(cloudAutoTimer);
+                cloudOverlay.removeEventListener('click', startCloudExit);
+                document.removeEventListener('keydown', onCloudSkipKey);
+
                 /* Fondu simultané : overlay disparaît + carte apparaît */
                 cloudOverlay.classList.add('exiting');
                 const mapContainer = document.getElementById('map-container');
@@ -4301,8 +4333,23 @@
                     /* Nuage terminé → languette coral apparaît (body.cloud-done) */
                     document.body.classList.add('cloud-done');
                     if (window._onCloudDone) window._onCloudDone();
-                }, 1500);
-            }, 3800);
+                }, reduceMoCloud ? 300 : 1500);
+            }
+
+            function onCloudSkipKey(e) {
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar' || e.key === 'Escape') {
+                    e.preventDefault();
+                    startCloudExit();
+                }
+            }
+
+            cloudOverlay.style.cursor = 'pointer';
+            cloudOverlay.addEventListener('click', startCloudExit);
+            document.addEventListener('keydown', onCloudSkipKey);
+
+            /* Cloud forms (1.4s) then floats ~2s, then auto-rises */
+            cloudAutoTimer = setTimeout(startCloudExit, reduceMoCloud ? 600 : 3800);
         }
 
         function initLeafletMap() {
@@ -4324,7 +4371,7 @@
             ];
 
             leafletMap = new google.maps.Map(document.getElementById('map-container'), {
-                center: { lat: 48.8127, lng: 2.3849 },
+                center: { lat: 44.8045, lng: -0.6063 },
                 zoom: 14,
                 minZoom: 3,
                 styles: lightStyle,
@@ -4375,11 +4422,10 @@
                 if (loc.isCurrent) {
                     const iw = new google.maps.InfoWindow({
                         content: `<div style="font-family:'Poppins',sans-serif;color:#3D405B;font-size:14px;line-height:1.6;">
-                            <strong style="font-weight:700;">📍 Actuellement chez Pollen AM</strong><br>
-                            <a href="https://www.pollen.am" target="_blank" rel="noopener"
-                               style="color:#E07A5F;font-size:13px;font-weight:600;text-decoration:none;letter-spacing:0.02em;">
-                               pollen.am&nbsp;↗
-                            </a>
+                            <strong style="font-weight:700;">📍 ${loc.currentBadge || loc.title}</strong><br>
+                            <span style="color:#E07A5F;font-size:13px;font-weight:600;letter-spacing:0.02em;">
+                               ${loc.currentSub || ''}
+                            </span>
                         </div>`
                     });
                     iw.open(leafletMap, marker);
@@ -6517,7 +6563,7 @@
                 const toggleBtns = Array.from(document.querySelectorAll('.view-toggle__btn'));
                 if (stackGrid && section) {
                     const stackDates = {
-                        'pollen-am': 'Avril 2026 – En cours',
+                        'pollen-am': 'Juin – Août 2026',
                         'stage-i2m': '2025 · 1 mois',
                         'projet-robot': '2024-2025',
                         'boitier-air': '2023-2024',
@@ -6746,7 +6792,7 @@
                 /* Données : titre + date + texte descriptif (issus des fichiers .txt).
                    Stage I2M : contenu inchangé (4 sous-projets, sans description ajoutée). */
                 const MC_DATA = [
-                    { key: 'pollen-am', title: 'Technicien de laboratoire en fabrication additive — Pollen AM', date: 'Avril 2026 – En cours', accent: '#E07A5F', tint: 'rgba(224,122,95,0.12)',
+                    { key: 'pollen-am', title: 'Technicien de laboratoire en fabrication additive — Pollen AM', date: 'Juin – Août 2026', accent: '#E07A5F', tint: 'rgba(224,122,95,0.12)',
                       image: 'Stage_Pollen_AM/Stage_Pollen_AM_4_mois-Avril_2026.png',
                       desc: "Fabrication additive industrielle (technologie PAM).\n\n• Maintenance du parc d'imprimantes 3D industrielles\n• Câblage des imprimantes 3D\n• Conception d'un support de liaison pour un ventilateur de cartouche d'impression (SolidWorks)\n• Réglage des profils d'impression sur Cura Slicer" },
                     { key: 'stage-i2m', title: 'Stage I2M — Conception en R&D', date: 'Février 2025 · 1 mois', accent: '#81B29A', tint: 'rgba(129,178,154,0.14)',
