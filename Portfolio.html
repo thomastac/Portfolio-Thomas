@@ -7494,7 +7494,7 @@
                 src:[{t:'Mes projets personnels',m:'projet-perso'}] },
             equipe: { title:"Travail d'équipe",
                 desc:"Aptitude à collaborer et à piloter un projet de groupe jusqu'au bout.",
-                src:[{t:'Préparation militaire'},{t:'Projets scolaires'},{t:'Mobilité en Turquie',m:'mobilite-international'}] },
+                src:[{t:'Préparation militaire',a:'#valorisation'},{t:'Projets scolaires',a:'#fiches-missions'},{t:'Mobilité en Turquie',m:'mobilite-international'}] },
         };
         const ARROW = '<svg class="rsf-tag__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>';
         const HINT = '<p class="rsf-detail__hint">👆 Survolez ou touchez un savoir-faire sur la roue pour voir comment je l\'ai acquis.</p>';
@@ -7513,6 +7513,7 @@
         function tagHTML(s, i){
             const delay = 'style="animation-delay:'+(0.05+i*0.07)+'s"';
             if (s.m) return '<button type="button" class="rsf-tag" data-mission="'+s.m+'" '+delay+'>'+esc(s.t)+ARROW+'</button>';
+            if (s.a) return '<a class="rsf-tag" href="'+s.a+'" '+delay+'>'+esc(s.t)+ARROW+'</a>';
             return '<span class="rsf-tag" '+delay+'>'+esc(s.t)+'</span>';
         }
         function render(key){
